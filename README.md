@@ -7,8 +7,8 @@
 ## Componentes do Grupo
 
 * Arthur Felipe
-* [Nome do Aluno 2 (se houver)]
-* [Nome do Aluno 3 (se houver)]
+* João Victor Lemes
+* Matheus Augusto
 
 ## Visão Geral do Projeto
 
