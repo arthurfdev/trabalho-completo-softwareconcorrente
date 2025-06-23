@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Service - Teste Frontend</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #252526;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            text-align: left;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #3c3c3c;
+            background-color: #333;
+            color: #d4d4d4;
+            font-size: 1em;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #333;
+            min-height: 50px;
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .success {
+            color: #73d16e;
+        }
+        .error {
+            color: #f44747;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Criar Novo Pedido</h1>
+    <label for="items">Itens do Pedido (separados por vírgula):</label>
+    <input type="text" id="items" placeholder="ex: item-A, item-B, item-C">
+    <button onclick="sendOrder()">Enviar Pedido</button>
+    <div id="response">Aguardando resposta do servidor...</div>
+</div>
+
+<script>
+    async function sendOrder() {
+        const itemsInput = document.getElementById('items');
+        const responseDiv = document.getElementById('response');
+        
+        // Pega os itens do input e transforma em um array de strings
+        const itemsArray = itemsInput.value.split(',').map(item => item.trim()).filter(item => item);
+
+        if (itemsArray.length === 0) {
+            responseDiv.textContent = 'Por favor, insira pelo menos um item.';
+            responseDiv.className = 'error';
+            return;
+        }
+        
+        responseDiv.textContent = 'Enviando...';
+        responseDiv.className = '';
+
+        try {
+            const response = await fetch('http://localhost:8080/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(itemsArray),
+            });
+
+            const responseText = await response.text();
+
+            if (response.ok) {
+                responseDiv.textContent = `Sucesso!\n${responseText}`;
+                responseDiv.className = 'success';
+            } else {
+                responseDiv.textContent = `Erro: ${response.status}\n${responseText}`;
+                responseDiv.className = 'error';
+            }
+        } catch (error) {
+            responseDiv.textContent = 'Erro de conexão. Verifique se o order-service está rodando e se não há problemas de CORS.';
+            responseDiv.className = 'error';
+        }
+    }
+</script>
+
+</body>
+</html>
