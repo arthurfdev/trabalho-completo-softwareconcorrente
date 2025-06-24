@@ -20,6 +20,8 @@ Para a demonstração, foi desenvolvida uma interface de frontend (um "Dashboard
 
 O sistema é modelado em uma arquitetura de microsserviços orientada a eventos.
 
+![Imagem da arquitetura do sistema](https://github.com/arthurfdev/trabalho-completo-softwareconcorrente/blob/main/docs/ImagemArquiteturaSistema.png)
+
 ### Fluxo de Negócio
 
 1.  **Frontend (`index.html`):** Uma página web permite que o usuário insira os itens de um pedido e o envie.
