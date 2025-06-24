@@ -1,11 +1,11 @@
 package br.com.example.inventoryservice;
 
-import java.util.Random;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Random;
 
 @Service
 public class InventoryService {
@@ -13,26 +13,21 @@ public class InventoryService {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    private final String RESULT_TOPIC = "inventory-events"; // Tópico de resultado 
-
-    // Anotação que transforma este método em um consumidor do Kafka 
     @KafkaListener(topics = "orders", groupId = "inventory-group")
     public void consumeOrder(Order order) {
-        System.out.println("Pedido recebido para processar estoque: " + order.getId());
+        String receivedLog = "[Inventory-Service] Pedido recebido para processar estoque: " + order.getId();
+        kafkaTemplate.send("log-events", receivedLog);
 
-        // Simulação da lógica de negócio: sucesso ou falha aleatória 
         boolean hasStock = new Random().nextBoolean();
         String resultMessage;
 
         if (hasStock) {
-            resultMessage = "SUCESSO: Estoque reservado para o pedido " + order.getId();
-            System.out.println(resultMessage);
+            resultMessage = "[Inventory-Service] SUCESSO: Estoque reservado para o pedido " + order.getId();
         } else {
-            resultMessage = "FALHA: Estoque insuficiente para o pedido " + order.getId();
-            System.out.println(resultMessage);
+            resultMessage = "[Inventory-Service] FALHA: Estoque insuficiente para o pedido " + order.getId();
         }
-
-        // Publica o resultado no tópico 'inventory-events' 
-        kafkaTemplate.send(RESULT_TOPIC, order.getId(), resultMessage);
+        
+        kafkaTemplate.send("log-events", resultMessage);
+        kafkaTemplate.send("inventory-events", order.getId(), resultMessage);
     }
 }
